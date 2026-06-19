@@ -1,5 +1,5 @@
 # ✅ Name of the Workflow
-name: Pipeline CI/CD frontend-app
+name: Pipeline CI/CD frontend-app.
 
 # ✅ Trigger this workflow on push to main branch
 on:
@@ -11,7 +11,7 @@ on:
 env:
   BUILD_NUMBER: ${{ github.run_number }}  # Unique build number for the pipeline run
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/frontend-app:${{ github.run_number }}
-  VITE_API_URL: https://api.lebondeveloppeur.net
+  VITE_API_URL: https://api.102.lebondeveloppeur.net
   PORT: 3000  # Define a configurable port
 
 jobs:
