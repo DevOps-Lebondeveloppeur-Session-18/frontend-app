@@ -7,6 +7,11 @@ on:
     branches:
       - main
 
+# ✅ Global Environment Variables
+env:
+  BUILD_NUMBER: ${{ github.run_number }}  # Unique build number for the pipeline run
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/frontend-app:${{ github.run_number }}
+
 jobs:
 
   sonarqube-code-quality-scan-job:
@@ -28,3 +33,28 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
+    
+  trivy-image-security-scan-job:
+    runs-on: ubuntu-latest
+    steps: 
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y curl
+
+      - name: Download and install Trivy
+        run: |
+          curl -sSL https://github.com/aquasecurity/trivy/releases/download/v0.29.0/trivy_0.29.0_Linux-64bit.tar.gz -o trivy.tar.gz
+          tar xzvf trivy.tar.gz
+          sudo mv trivy /usr/local/bin/
+          trivy --version
+
+      - name: Run Trivy Docker image vulnerability scan
+        run: |
+          docker build -t ${{ env.IMAGE_NAME }} .
+          trivy image ${{ env.IMAGE_NAME }}
+
+         # trivy fs . 
+
