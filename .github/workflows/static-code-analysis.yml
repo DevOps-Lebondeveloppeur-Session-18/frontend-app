@@ -36,25 +36,20 @@ jobs:
     
   trivy-image-security-scan-job:
     runs-on: ubuntu-latest
-    steps: 
+    steps:
 
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y curl
-
-      - name: Download and install Trivy
-        run: |
-          curl -sSL https://github.com/aquasecurity/trivy/releases/download/v0.29.0/trivy_0.29.0_Linux-64bit.tar.gz -o trivy.tar.gz
-          tar xzvf trivy.tar.gz
-          sudo mv trivy /usr/local/bin/
-          trivy --version
+      - name: Build Docker image
+        run: docker build -t ${{ env.IMAGE_NAME }} .
 
       - name: Run Trivy Docker image vulnerability scan
-        run: |
-          docker build -t ${{ env.IMAGE_NAME }} .
-          trivy image ${{ env.IMAGE_NAME }}
-
-         # trivy fs . 
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
 
