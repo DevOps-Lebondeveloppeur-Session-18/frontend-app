@@ -75,7 +75,7 @@ jobs:
               sudo docker ps -q --filter name=frontend-app | grep -q . && sudo docker rm -f frontend-app || echo "No existing container to remove"
 
               # Run the new container with environment variables
-              sudo docker run -d --name frontend-app -p ${{ env.PORT }}:80 -e NODE_ENV=production --restart always ${{ env.IMAGE_NAME }}
+              sudo docker run -d --name frontend-app -p 127.0.0.1:${{ env.PORT }}:80 -e NODE_ENV=production --restart always ${{ env.IMAGE_NAME }}
 
               # Shows running containers
               sudo docker ps

@@ -1,7 +1,7 @@
 # ✅ Name of the Workflow
 name: Pipeline CI/CD sonarqube-code-quality-scan-job.
 
-# ✅ Trigger this workflow on pull request to main branch.
+# ✅ Trigger this workflow on pull request to main branch...
 on:
   pull_request:
     branches:
@@ -36,25 +36,36 @@ jobs:
     
   trivy-image-security-scan-job:
     runs-on: ubuntu-latest
-    steps: 
+    steps:
 
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y curl
-
-      - name: Download and install Trivy
-        run: |
-          curl -sSL https://github.com/aquasecurity/trivy/releases/download/v0.29.0/trivy_0.29.0_Linux-64bit.tar.gz -o trivy.tar.gz
-          tar xzvf trivy.tar.gz
-          sudo mv trivy /usr/local/bin/
-          trivy --version
+      - name: Build Docker image
+        run: docker build -t ${{ env.IMAGE_NAME }} .
 
       - name: Run Trivy Docker image vulnerability scan
-        run: |
-          docker build -t ${{ env.IMAGE_NAME }} .
-          trivy image ${{ env.IMAGE_NAME }}
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
 
-         # trivy fs . 
+  snyk-code-security-scan-job:
+      runs-on: ubuntu-latest
+      steps:
+
+        - name: Checkout Code
+          uses: actions/checkout@v4
+
+        - name: Install Dependency Scanning Tool (Snyk)
+          run: npm install -g snyk
+
+        - name: Snyk Authentication
+          run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+        - name: Run Snyk Vulnerability Scan
+          run: snyk monitor --all-projects --org=assidiwassim
 
