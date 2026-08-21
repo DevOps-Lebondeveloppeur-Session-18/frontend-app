@@ -13,8 +13,7 @@ jobs:
             - name: clone repository
               uses: actions/checkout@v7
             - name: check clone
-              run: ls        
-            - run: docker build -t session18 ../dockerdocker    
+              run: ls          
 
     job2:
         runs-on: ubuntu-latest
