@@ -53,7 +53,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y curl
       - name: Download and install Trivy
         run: |
-          curl -sSL https://github.com/aquasecurity/trivy/releases/download/v0.29.0/trivy_0.29.0_Linux-64bit.tar.gz -o trivy.tar.gz
+          curl -sSL https://github.com/aquasecurity/trivy/releases/download/v0.74.0/trivy_0.74.0_Linux-32bit.tar.gz -o trivy.tar.gz
           tar xzvf trivy.tar.gz
           sudo mv trivy /usr/local/bin/
           trivy --version
